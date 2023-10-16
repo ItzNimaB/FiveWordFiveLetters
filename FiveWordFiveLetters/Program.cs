@@ -1,4 +1,6 @@
-﻿using FiveWordFiveLetters;
+﻿using System;
+using System.Threading;
+using FiveWordFiveLetters;
 
 List<string> words = File.ReadAllLines("beta.txt").ToList();
 List<string> validWords = new();

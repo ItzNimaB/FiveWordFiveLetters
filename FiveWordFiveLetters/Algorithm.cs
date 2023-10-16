@@ -13,22 +13,62 @@ namespace FiveWordFiveLetters
         {
             List<string> shadowList = new(words);
 
+            string exampleWord = "ampyx";
+
             foreach (string word in shadowList)
             {
-                for (int i = 0; i < 5;  i++)
+                if (word.ToCharArray().Any(c => exampleWord.ToCharArray().Any(c2 => c2 == c)))
                 {
-                    Console.WriteLine(word);
-                    string exWord = "backy";
-                    if (word.ToCharArray().Any(c => c == word[0] || c == word[1] || c == word[2] || c == word[3] || c == word[4])) words.Remove(word);
+                    words.Remove(word);
+                }
+                
+                // if (words.Count == 0) words = new(shadowList);
+            }
 
-                    string exWord2 = "fjord";
-                    if (word.ToCharArray().Any(c => c == exWord2[0] || c == exWord2[1] || c == exWord2[2] || c == exWord2[3] || c == exWord2[4])) words.Remove(word);
+            exampleWord = "bejig";
 
-                    string exWord3 = "muntz";
-                    if (word.ToCharArray().Any(c => c == exWord3[0] || c == exWord3[1] || c == exWord3[2] || c == exWord3[3] || c == exWord3[4])) words.Remove(word);
+            foreach (string word in shadowList)
+            {
+                if (word.ToCharArray().Any(c => exampleWord.ToCharArray().Any(c2 => c2 == c)))
+                {
+                    words.Remove(word);
                 }
 
+                // if (words.Count == 0) words = new(shadowList);
             }
+
+            exampleWord = "fconv";
+
+            foreach (string word in shadowList)
+            {
+                if (word.ToCharArray().Any(c => exampleWord.ToCharArray().Any(c2 => c2 == c)))
+                {
+                    words.Remove(word);
+                }
+
+                // if (words.Count == 0) words = new(shadowList);
+            }
+
+            exampleWord = "hdqrs";
+
+            foreach (string word in shadowList)
+            {
+                // if (word.ToCharArray().Any(c => c == 'a' || c == 'm' || c == 'p' || c == 'y' || c == 'x'))
+                if (word.ToCharArray().Any(c => exampleWord.ToCharArray().Any(c2 => c2 == c)))
+                {
+                    words.Remove(word);
+                }
+
+                // if (words.Count == 0) words = new(shadowList);
+            }
+
+            if (words.Count >= 1) Console.WriteLine("Fundet!");
+
+            // Thread thr1 = new Thread(method1);
+            // Thread thr2 = new Thread(method2);
+            // thr1.Start();
+            // thr2.Start();
+
             return words;
         }
     }
