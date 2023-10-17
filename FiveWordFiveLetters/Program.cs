@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using FiveWordFiveLetters;
+
+var stopwatch = new Stopwatch();
+
+stopwatch.Start();
 
 List<string> words = File.ReadAllLines("beta.txt").ToList();
 List<string> validWords = new();
@@ -35,7 +40,7 @@ foreach (string word in words)
 
 // validWords.ForEach(Console.WriteLine);
 
-Algorithm.Sort(validWords).ForEach(Console.WriteLine);
+Algorithm.Sort(validWords); //.ForEach(Console.WriteLine);
 
 Console.Write("Words with more than 5 words: ");
 Console.WriteLine(moreThanFiveWords);
@@ -43,3 +48,8 @@ Console.Write("Words with recurring letters: ");
 Console.WriteLine(notUniqueLetters);
 Console.Write("Amount of unique words: ");
 Console.WriteLine(validWords.Count);
+
+stopwatch.Stop();
+Console.WriteLine("ms: " + stopwatch.ElapsedMilliseconds);
+
+Console.Read();

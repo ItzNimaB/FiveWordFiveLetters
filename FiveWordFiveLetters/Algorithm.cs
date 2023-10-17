@@ -12,34 +12,50 @@ namespace FiveWordFiveLetters
         public static List<string> Sort(List<string> words)
         {
             List<string> shadowList = new(words);
-            List<string> successfulWords = new();
+            List<string> successCombs = new();
+            int successWordsCount = 0;
 
-            List<string> exampleWords = new() { "ampyx", "bejig", "fconv", "hdqrs" };
-
-            foreach (string exWord in exampleWords)
+            foreach (string word in shadowList)
             {
-                successfulWords.Add(exWord);
-                foreach (string word in shadowList)
+                foreach (string word2 in shadowList)
                 {
-                    if (word.ToCharArray().Any(c => exWord.ToCharArray().Any(c2 => c2 == c)))
+                    if (word2.Intersect(word).Any()) continue;
+                    foreach (string word3 in shadowList)
                     {
-                        words.Remove(word);
-                    }
+                        if (word3.Intersect(word2).Any() || word3.Intersect(word).Any()) continue;
+                        foreach (string word4 in shadowList)
+                        {
+                            if (word4.Intersect(word3).Any() || word4.Intersect(word2).Any() || word4.Intersect(word).Any()) continue;
+                            foreach(string word5 in shadowList)
+                            {
+                                if (word5.Intersect(word4).Any() || word5.Intersect(word3).Any() || word5.Intersect(word2).Any() || word5.Intersect(word).Any()) continue;
+                                List<string> combination = new() { word, word2, word3, word4, word5 };
+                                combination.Sort();
 
-                    // if (words.Count == 0) Console.WriteLine("No words left");
+                                if (successCombs.Contains(string.Join(" ", combination))) continue;
+                                else successCombs.Add(string.Join(" ", combination));
+
+                                Console.WriteLine(string.Join(" ", combination));
+                                successWordsCount++;
+
+                            }
+                        }
+                    }
                 }
-                // if (words.Count >= 1) Console.WriteLine("Found combi");
+
+                words = new(shadowList);
             }
 
-            if (words.Count > 0) { successfulWords.Add(words[0]); }
-            // successfulWords.ForEach(Console.WriteLine);
+            Console.WriteLine("Successfulde kombinationer: " + successWordsCount);
+
+            // successWords.ForEach(Console.WriteLine);
 
             // Thread thr1 = new Thread(method1);
             // Thread thr2 = new Thread(method2);
             // thr1.Start();
             // thr2.Start();
 
-            return successfulWords;
+            return words;
         }
     }
 }
