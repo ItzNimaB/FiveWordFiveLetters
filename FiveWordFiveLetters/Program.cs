@@ -7,7 +7,7 @@ var stopwatch = new Stopwatch();
 
 stopwatch.Start();
 
-List<string> words = File.ReadAllLines("alpha.txt").ToList();
+List<string> words = File.ReadAllLines("beta.txt").ToList();
 List<string> validWords = new();
 
 int moreThanFiveWords = 0;
