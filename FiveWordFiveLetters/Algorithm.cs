@@ -17,23 +17,24 @@ namespace FiveWordFiveLetters
 
             foreach (string word in shadowList)
             {
-                Console.WriteLine("{0}", word);
+                // Console.WriteLine("{0}", word);
                 foreach (string word2 in shadowList)
                 {
                     if (word2.Intersect(word).Any()) continue;
-                    Console.WriteLine("{0} {1}", word, word2);
+                    // Console.WriteLine("{0} {1}", word, word2);
                     foreach (string word3 in shadowList)
                     {
                         if (word3.Intersect(word2).Any() || word3.Intersect(word).Any()) continue;
-                        Console.WriteLine("{0} {1} {2}", word, word2, word3);
+                        // Console.WriteLine("{0} {1} {2}", word, word2, word3);
                         foreach (string word4 in shadowList)
                         {
                             if (word4.Intersect(word3).Any() || word4.Intersect(word2).Any() || word4.Intersect(word).Any()) continue;
-                            Console.WriteLine("{0} {1} {2} {3}", word, word2, word3, word4);
-                            foreach(string word5 in shadowList)
+                            // Console.WriteLine("{0} {1} {2} {3}", word, word2, word3, word4);
+                            List<string> shadowList5 = new(shadowList);
+                            // shadowList5.RemoveAll(r => r.Intersect(word4).Any() || r.Intersect(word3).Any() || r.Intersect(word2).Any() || r.Intersect(word).Any());
+                            foreach (string word5 in shadowList5)
                             {
                                 Console.WriteLine("{0} {1} {2} {3} {4}", word, word2, word3, word4, word5);
-                                word5.ToCharArray();
                                 if (word5.Intersect(word4).Any() || word5.Intersect(word3).Any() || word5.Intersect(word2).Any() || word5.Intersect(word).Any())
                                 {
                                     if (word5.Intersect(word4).Any()) Console.WriteLine(string.Join("", word5.Intersect(word4).ToList() ));
