@@ -29,15 +29,12 @@ namespace FiveWordFiveLetters
                             foreach(string word5 in shadowList)
                             {
                                 if (word5.Intersect(word4).Any() || word5.Intersect(word3).Any() || word5.Intersect(word2).Any() || word5.Intersect(word).Any()) continue;
-                                List<string> combination = new() { word, word2, word3, word4, word5 };
-                                combination.Sort();
+                                List<string> combination = new() { word, word2, word3, word4, word5 }; combination.Sort();
 
-                                if (successCombs.Contains(string.Join(" ", combination))) continue;
-                                else successCombs.Add(string.Join(" ", combination));
+                                if (successCombs.Contains(string.Join(" ", combination))) continue; else successCombs.Add(string.Join(" ", combination));
 
                                 Console.WriteLine(string.Join(" ", combination));
                                 successWordsCount++;
-
                             }
                         }
                     }
