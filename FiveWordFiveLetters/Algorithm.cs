@@ -9,42 +9,38 @@ namespace FiveWordFiveLetters
 {
     internal class Algorithm
     {
-        public static List<string> Sort(List<string> words)
+        public static Dictionary<string, int> Sort(Dictionary<string, int> words)
         {
-            List<string> shadowList = new(words);
-            List<string> successCombs = new();
+            Dictionary<string, int> shadowList = new(words);
+            List<List<int>> successCombs = new();
             int successWordsCount = 0;
 
-            foreach (string word in shadowList)
+            foreach (var (word1, bit1) in shadowList)
             {
-                Console.WriteLine("{0}", word);
-                foreach (string word2 in shadowList)
+                foreach (var (word2, bit2) in shadowList)
                 {
-                    if (word2.Intersect(word).Any()) continue;
-                    Console.WriteLine("{0} {1}", word, word2);
-                    foreach (string word3 in shadowList)
+                    if (word2.Intersect(word1).Any()) continue;
+                    foreach (var (word3, bit3) in shadowList)
                     {
-                        if (word3.Intersect(word2).Any() || word3.Intersect(word).Any()) continue;
-                        Console.WriteLine("{0} {1} {2}", word, word2, word3);
-                        foreach (string word4 in shadowList)
+                        if (word3.Intersect(word1 + word2).Any()) continue;
+                        foreach (var (word4, bit4) in shadowList)
                         {
-                            if (word4.Intersect(word3).Any() || word4.Intersect(word2).Any() || word4.Intersect(word).Any()) continue;
-                            Console.WriteLine("{0} {1} {2} {3}", word, word2, word3, word4);
-                            foreach(string word5 in shadowList)
+                            if (word4.Intersect(word1 + word2 + word3).Any()) continue;
+                            foreach(var (word5, bit5) in shadowList)
                             {
-                                Console.WriteLine("{0} {1} {2} {3} {4}", word, word2, word3, word4, word5);
+                                // Console.WriteLine("{0} {1} {2} {3} {4}", word, word2, word3, word4, word5);
                                 word5.ToCharArray();
-                                if (word5.Intersect(word4).Any() || word5.Intersect(word3).Any() || word5.Intersect(word2).Any() || word5.Intersect(word).Any())
+                                if (word5.Intersect(word1 + word2 + word3 + word4).Any())
                                 {
-                                    if (word5.Intersect(word4).Any()) Console.WriteLine(string.Join("", word5.Intersect(word4).ToList() ));
+                                    // if (word5.Intersect(word4).Any()) Console.WriteLine(string.Join("", word5.Intersect(word4).ToList() ));
                                     continue;
                                 }
                                 
-                                Console.WriteLine("{0} {1} {2} {3} {4}", word, word2, word3, word4, word5);
-                                List<string> combination = new() { word, word2, word3, word4, word5 }; combination.Sort();
+                                // Console.WriteLine("{0} {1} {2} {3} {4}", word1, word2, word3, word4, word5);
+                                List<int> combination = new() { bit1, bit2, bit3, bit4, bit5 }; combination.Sort();
 
-                                if (successCombs.Contains(string.Join("", combination))) continue; else successCombs.Add(string.Join("", combination));
-
+                                if (successCombs.Contains(combination)) continue; else successCombs.Add(combination);
+                                 
                                 Console.WriteLine(string.Join(" ", combination));
                                 successWordsCount++;
                             }
@@ -57,7 +53,7 @@ namespace FiveWordFiveLetters
 
             Console.WriteLine("Successfulde kombinationer: " + successWordsCount);
 
-            successCombs.ForEach(Console.WriteLine);
+           // successCombs.ForEach(Console.WriteLine);
 
             // successWords.ForEach(Console.WriteLine);
 

@@ -7,7 +7,7 @@ var stopwatch = new Stopwatch();
 
 stopwatch.Start();
 
-List<string> words = File.ReadAllLines("alpha.txt").ToList();
+List<string> words = File.ReadAllLines("beta.txt").ToList();
 List<string> validWords = new();
 
 int moreThanFiveWords = 0;
@@ -38,9 +38,23 @@ foreach (string word in words)
     }
 }
 
+Dictionary<string, int> dirWords = new();
+
+int[] bits = new int[validWords.Count];
+for (int i = 0; i < validWords.Count; i++)
+{
+    var bit = 0;
+    foreach (char letter in validWords[i])
+    {
+        bit |= 1 << letter - 'a';
+    }
+    dirWords.Add(validWords[i], bit);
+    bits[i] = bit;
+}
+
 // validWords.ForEach(Console.WriteLine);
 
-Algorithm.Sort(validWords); //.ForEach(Console.WriteLine);
+Algorithm.Sort(dirWords); //.ForEach(Console.WriteLine);
 
 Console.Write("Words with more than 5 words: ");
 Console.WriteLine(moreThanFiveWords);
