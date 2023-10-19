@@ -23,10 +23,7 @@ void function(double startIndex = 0, double endIndex = 0)
             if (word.Distinct().Count() != 5) continue;
 
             var bit = 0;
-            foreach (char letter in word)
-            {
-                bit |= 1 << letter - 'a';
-            }
+            foreach (char letter in word) { bit |= 1 << letter - 'a'; }
             try
             {
                 dirWords.Add(bit, word);
@@ -37,31 +34,33 @@ void function(double startIndex = 0, double endIndex = 0)
             catch { duplicateWords++; }
         }
 
-        Console.WriteLine("Valid/duplicate words: {0}/{1}. Time: {2}", words.Count, duplicateWords, stopwatch.ElapsedMilliseconds);
+        Console.WriteLine("Valid - duplicate words: {0} - {1}. Time: {2}", words.Count, duplicateWords, stopwatch.ElapsedMilliseconds);
     }
 
     List<List<string>> combinations = new();
 
     startIndex = Math.Round(startIndex * words.Count);
-    endIndex = Math.Round(endIndex * words.Count);
+    if (endIndex > 0) endIndex = Math.Round(endIndex * words.Count);
+    else endIndex = words.Count;
+
+    int wordsCount = words.Count;
 
     for (int i = (int)startIndex; i < endIndex; i++)
     {
-        // try { Console.WriteLine(words[i-1]); words.RemoveAt(i-1); } catch { }
-        // Console.WriteLine("{0} | {1}/{2} [{3}%] ({4})", words[i], i+1, words.Count, Math.Round((double)i / (words.Count-1) * 100, 2), stopwatch.Elapsed);
-        for (int j = i + 1; j < words.Count; j++)
+        Console.WriteLine("{0} | {1}/{2} [{3}%] ({4})", words[i], i+1, wordsCount, Math.Round((double)i / (wordsCount - 1) * 100, 2), stopwatch.Elapsed);
+        for (int j = i + 1; j < wordsCount; j++)
         {
             if ((bits[i] & bits[j]) != 0) continue;
             var testComb = bits[i] + bits[j];
-            for (int k = j + 1; k < words.Count; k++)
+            for (int k = j + 1; k < wordsCount; k++)
             {
                 if ((testComb & bits[k]) != 0) continue;
                 var testComb2 = testComb + bits[k];
-                for (int l = k + 1; l < words.Count; l++)
+                for (int l = k + 1; l < wordsCount; l++)
                 {
                     if ((testComb2 & bits[l]) != 0) continue;
                     var testComb3 = testComb2 + bits[l];
-                    for (int m = l + 1; m < words.Count; m++)
+                    for (int m = l + 1; m < wordsCount; m++)
                     {
                         if ((testComb3 & bits[m]) != 0) continue;
                         // Console.WriteLine("{0} {1} {2} {3} {4}", words[i], words[j], words[k], words[l], words[m]);
@@ -73,12 +72,12 @@ void function(double startIndex = 0, double endIndex = 0)
     }
 
     // combinations.ForEach(x => Console.WriteLine(string.Join(" ", x)));
-    Console.WriteLine("{0} found combinations, {1} ms elapsed", combinations.Count, stopwatch.Elapsed);
-    Console.WriteLine("{0} {1}", startIndex, endIndex);
+    Console.WriteLine("{0} combinations, {1}", combinations.Count, stopwatch.Elapsed);
+    // Console.WriteLine("{0} {1}", startIndex, endIndex);
     timesElapsed.Add(stopwatch.ElapsedMilliseconds);
 }
 
-// for (int i = 0; i < 1;  i++) { function(); }
+for (int i = 0; i < 1;  i++) { function(); } Console.WriteLine(string.Join(" ", timesElapsed));
 
 List<Thread> threads = new()
 {
@@ -89,6 +88,4 @@ List<Thread> threads = new()
     new Thread(() => function(0.8, 1))
 };
 
-threads.ForEach(x => x.Start());
-
-Console.WriteLine(string.Join(" ", timesElapsed));
+// threads.ForEach(x => x.Start());
