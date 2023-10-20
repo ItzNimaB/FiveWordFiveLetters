@@ -8,10 +8,8 @@ void function(double startIndex = 0, double endIndex = 0)
 
     int duplicateWords = 0;
 
-    List<string> words = new();
-
     Dictionary<int, string> dirWords = new();
-    int[] bits = new int[words.Count];
+    int[] bits = Array.Empty<int>();
 
     using (var reader = new StreamReader("alpha.txt"))
     {
@@ -29,25 +27,57 @@ void function(double startIndex = 0, double endIndex = 0)
                 dirWords.Add(bit, word);
                 Array.Resize(ref bits, bits.Length + 1);
                 bits[^1] = bit;
-                words.Add(word);
             }
             catch { duplicateWords++; }
         }
 
-        Console.WriteLine("Valid - duplicate words: {0} - {1}. Time: {2}", words.Count, duplicateWords, stopwatch.ElapsedMilliseconds);
+        Console.WriteLine("Valid - duplicate words: {0} - {1}. Time: {2}", dirWords.Count, duplicateWords, stopwatch.ElapsedMilliseconds);
     }
 
     List<List<string>> combinations = new();
 
-    startIndex = Math.Round(startIndex * words.Count);
-    if (endIndex > 0) endIndex = Math.Round(endIndex * words.Count);
-    else endIndex = words.Count;
+    startIndex = Math.Round(startIndex * dirWords.Count);
+    if (endIndex > 0) endIndex = Math.Round(endIndex * dirWords.Count);
+    else endIndex = dirWords.Count;
 
-    int wordsCount = words.Count;
+    int wordsCount = dirWords.Count;
 
+    
+    // FindCombos(0, 0, new int[0]);
+
+    void FindCombos(int startIndex, int usedBits, int[] combination)
+    {
+        if (combination.Length == 5)
+        {
+            combinations.Add(new() {
+                dirWords[combination[0]],
+                dirWords[combination[1]],
+                dirWords[combination[2]],
+                dirWords[combination[3]],
+                dirWords[combination[4]]
+            });
+            Console.WriteLine(string.Join(" ", combination));
+            return;
+        }
+
+        for (int i = startIndex; i < wordsCount; i++)
+        {
+            if ((usedBits & bits[i]) == 0)
+            {
+                int[] newCombos = new int[combination.Length + 1];
+                combination.CopyTo(newCombos, 0);
+                newCombos[combination.Length] = bits[i];
+                FindCombos(i + 1, usedBits | bits[i], newCombos);
+            }
+        }
+    }
+
+    // Mads' program: 00:04:40:96
+
+    
     for (int i = (int)startIndex; i < endIndex; i++)
     {
-        Console.WriteLine("{0} | {1}/{2} [{3}%] ({4})", words[i], i+1, wordsCount, Math.Round((double)i / (wordsCount - 1) * 100, 2), stopwatch.Elapsed);
+        Console.WriteLine("{0} | {1}/{2} [{3}%] ({4})", dirWords[bits[i]], i+1, wordsCount, Math.Round((double)i / (wordsCount - 1) * 100, 2), stopwatch.Elapsed);
         for (int j = i + 1; j < wordsCount; j++)
         {
             if ((bits[i] & bits[j]) != 0) continue;
@@ -64,22 +94,24 @@ void function(double startIndex = 0, double endIndex = 0)
                     {
                         if ((testComb3 & bits[m]) != 0) continue;
                         // Console.WriteLine("{0} {1} {2} {3} {4}", words[i], words[j], words[k], words[l], words[m]);
-                        combinations.Add(new() { words[i], words[j], words[k], words[l], words[m] });
+                        combinations.Add(new() { dirWords[bits[i]], dirWords[bits[j]], dirWords[bits[k]], dirWords[bits[l]], dirWords[bits[m]] });
                     }
                 }
             }
         }
     }
 
+    // Nima's program: 00:04:32.19
+
     // combinations.ForEach(x => Console.WriteLine(string.Join(" ", x)));
-    Console.WriteLine("{0} combinations, {1}", combinations.Count, stopwatch.Elapsed);
+    Console.WriteLine("{0} combinations | {1}", combinations.Count, stopwatch.Elapsed);
     // Console.WriteLine("{0} {1}", startIndex, endIndex);
     timesElapsed.Add(stopwatch.ElapsedMilliseconds);
 }
 
-for (int i = 0; i < 1;  i++) { function(); } Console.WriteLine(string.Join(" ", timesElapsed));
+    for (int i = 0; i < 1; i++) { function(); } Console.WriteLine(string.Join(" ", timesElapsed));
 
-List<Thread> threads = new()
+    List<Thread> threads = new()
 {
     new Thread(() => function(0, 0.2)),
     new Thread(() => function(0.2, 0.4)),
