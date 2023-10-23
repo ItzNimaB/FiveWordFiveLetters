@@ -32,6 +32,10 @@ void loadWords()
         dirWords.Add(bit, word);
     }
 
+    dirWords = dirWords.OrderBy(kv => { int key = 0; if (kv.Value.Contains('b') || kv.Value.Contains('c') || kv.Value.Contains('d') || kv.Value.Contains('f')) key = 1; else key = 0; return key; })
+    .ThenBy(kv => kv.Value)
+    .ToDictionary(kv => kv.Key, kv => kv.Value);
+
     Console.WriteLine("Valid - duplicate words: {0} - {1}. Time: {2}", dirWords.Count, duplicateWords, stopwatch.ElapsedMilliseconds);
 }
 
@@ -77,33 +81,33 @@ void function(double startIndex = 0, double endIndex = 0)
     }
 
     // Mads' program: 00:04:40:96
-
+     
     for (int i = (int)startIndex; i < endIndex; i++)
     {
         Console.WriteLine("{0} | {1}/{2} [{3}%] ({4})", dirWords[bits[i]], i+1, wordsCount, Math.Round((double)i / (wordsCount - 1) * 100, 2), stopwatch.Elapsed);
         for (int j = i + 1; j < wordsCount; j++)
         {
             if ((bits[i] & bits[j]) != 0) continue;
-            var testComb = bits[i] + bits[j];
+            var bitIJ = bits[i] | bits[j];
             for (int k = j + 1; k < wordsCount; k++)
             {
-                if ((testComb & bits[k]) != 0) continue;
-                var testComb2 = testComb + bits[k];
+                if ((bitIJ & bits[k]) != 0) continue;
+                var bitJK = bitIJ | bits[k];
                 for (int l = k + 1; l < wordsCount; l++)
                 {
-                    if ((testComb2 & bits[l]) != 0) continue;
-                    var testComb3 = testComb2 + bits[l];
+                    if ((bitJK & bits[l]) != 0) continue;
+                    var bitJKL = bitJK | bits[l];
                     for (int m = l + 1; m < wordsCount; m++)
                     {
-                        if ((testComb3 & bits[m]) != 0) continue;
-                        // Console.WriteLine("{0} {1} {2} {3} {4}", words[i], words[j], words[k], words[l], words[m]);
+                        if ((bitJKL & bits[m]) != 0) continue;
+                        // Console.WriteLine("{0} {1} {2} {3} {4}", dirWords[bits[i]], dirWords[bits[j]], dirWords[bits[k]], dirWords[bits[l]], dirWords[bits[m]]);
                         combinations.Add(new() { dirWords[bits[i]], dirWords[bits[j]], dirWords[bits[k]], dirWords[bits[l]], dirWords[bits[m]] });
                     }
                 }
             }
         }
     }
-
+    
     // Nima's program: 00:04:32.19
 
     totalCombinations += combinations.Count;
@@ -112,17 +116,6 @@ void function(double startIndex = 0, double endIndex = 0)
     timesElapsed.Add(stopwatch.ElapsedMilliseconds);
 }
 
-for (int i = 0; i < 1; i++) { function(); } Console.WriteLine(string.Join(" ", timesElapsed));
+for (int i = 0; i < 1; i++) { function(); } /* Console.WriteLine(string.Join(" ", timesElapsed)); */
 
-List<Thread> threads = new();
-
-int amountOfThreads = 16;
-
-for (int i = 0; i < amountOfThreads; i++)
-{
-    double startIndex = (double)i / amountOfThreads;
-    double endIndex = (double)(i + 1) / amountOfThreads;
-    threads.Add(new Thread(() => function(startIndex, endIndex)));
-}
-
-// threads.ForEach(x => x.Start());
+// int amountOfThreads = 16; Parallel.For(0, amountOfThreads, i => function( (double)i / amountOfThreads, (double)(i + 1) / amountOfThreads));
