@@ -51,7 +51,8 @@ void function(double startIndex = 0, double endIndex = 0)
 
     int wordsCount = dirWords.Count;
 
-    // FindCombos(0, 0, new int[0]);
+    Console.WriteLine(startIndex);
+    FindCombos(0, 0, new int[0]);
 
     void FindCombos(int startIndex, int usedBits, int[] combination)
     {
@@ -64,11 +65,12 @@ void function(double startIndex = 0, double endIndex = 0)
                 dirWords[combination[3]],
                 dirWords[combination[4]]
             });
-            Console.WriteLine(string.Join(" ", combination));
+            // Console.WriteLine(string.Join(" ", combination));
+            foreach (var item in combination) Console.Write("{0} ", dirWords[item]); Console.WriteLine();
             return;
         }
 
-        for (int i = startIndex; i < wordsCount; i++)
+        for (int i = startIndex; i < endIndex; i++)
         {
             if ((usedBits & bits[i]) == 0)
             {
@@ -82,9 +84,10 @@ void function(double startIndex = 0, double endIndex = 0)
 
     // Mads' program: 00:04:40:96
      
+    /*
     for (int i = (int)startIndex; i < endIndex; i++)
     {
-        Console.WriteLine("{0} | {1}/{2} [{3}%] ({4})", dirWords[bits[i]], i+1, wordsCount, Math.Round((double)i / (wordsCount - 1) * 100, 2), stopwatch.Elapsed);
+        // Console.WriteLine("{0} | {1}/{2} [{3}%] ({4})", dirWords[bits[i]], i+1, wordsCount, Math.Round((double)i / (wordsCount - 1) * 100, 2), stopwatch.Elapsed);
         for (int j = i + 1; j < wordsCount; j++)
         {
             if ((bits[i] & bits[j]) != 0) continue;
@@ -107,15 +110,15 @@ void function(double startIndex = 0, double endIndex = 0)
             }
         }
     }
-    
+    */
     // Nima's program: 00:04:32.19
 
-    totalCombinations += combinations.Count;
+    // totalCombinations += combinations.Count;
     Console.WriteLine("{0}/{1} combinations | {2} | [{3} - {4}]", combinations.Count, totalCombinations, stopwatch.Elapsed, startIndex, endIndex);
     threadsDone++;
     timesElapsed.Add(stopwatch.ElapsedMilliseconds);
 }
 
-for (int i = 0; i < 1; i++) { function(); } /* Console.WriteLine(string.Join(" ", timesElapsed)); */
+// for (int i = 0; i < 1; i++) { function(); } /* Console.WriteLine(string.Join(" ", timesElapsed)); */
 
-// int amountOfThreads = 16; Parallel.For(0, amountOfThreads, i => function( (double)i / amountOfThreads, (double)(i + 1) / amountOfThreads));
+int amountOfThreads = 16; Parallel.For(0, amountOfThreads, i => function( (double)i / amountOfThreads, (double)(i + 1) / amountOfThreads));
