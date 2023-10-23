@@ -1,39 +1,43 @@
 ﻿using System.Diagnostics;
 
 List<long> timesElapsed = new();
-void function(double startIndex = 0, double endIndex = 0)
-{
-    Stopwatch stopwatch = new();
-    stopwatch.Start();
+Stopwatch stopwatch = new();
+stopwatch.Start();
 
+Dictionary<int, string> dirWords = new();
+int[] bits = Array.Empty<int>();
+
+int totalCombinations = 0;
+int threadsDone = 0;
+
+void loadWords()
+{
     int duplicateWords = 0;
 
-    Dictionary<int, string> dirWords = new();
-    int[] bits = Array.Empty<int>();
+    using var reader = new StreamReader("alpha.txt");
+    var word = "";
 
-    using (var reader = new StreamReader("alpha.txt"))
+    while ((word = reader.ReadLine()) != null)
     {
-        var word = "";
+        if (word.Length != 5) continue;
+        if (word.Distinct().Count() != 5) continue;
 
-        while ((word = reader.ReadLine()) != null)
-        {
-            if (word.Length != 5) continue;
-            if (word.Distinct().Count() != 5) continue;
+        var bit = 0;
+        foreach (char letter in word) { bit |= 1 << letter - 'a'; }
 
-            var bit = 0;
-            foreach (char letter in word) { bit |= 1 << letter - 'a'; }
-            try
-            {
-                dirWords.Add(bit, word);
-                Array.Resize(ref bits, bits.Length + 1);
-                bits[^1] = bit;
-            }
-            catch { duplicateWords++; }
-        }
+        if (dirWords.ContainsKey(bit)) { duplicateWords++; continue; }
 
-        Console.WriteLine("Valid - duplicate words: {0} - {1}. Time: {2}", dirWords.Count, duplicateWords, stopwatch.ElapsedMilliseconds);
+        dirWords.Add(bit, word);
+        Array.Resize(ref bits, bits.Length + 1);
+        bits[^1] = bit;
     }
 
+    Console.WriteLine("Valid - duplicate words: {0} - {1}. Time: {2}", dirWords.Count, duplicateWords, stopwatch.ElapsedMilliseconds);
+}
+
+loadWords();
+void function(double startIndex = 0, double endIndex = 0)
+{
     List<List<string>> combinations = new();
 
     startIndex = Math.Round(startIndex * dirWords.Count);
@@ -42,7 +46,6 @@ void function(double startIndex = 0, double endIndex = 0)
 
     int wordsCount = dirWords.Count;
 
-    
     // FindCombos(0, 0, new int[0]);
 
     void FindCombos(int startIndex, int usedBits, int[] combination)
@@ -77,7 +80,7 @@ void function(double startIndex = 0, double endIndex = 0)
     
     for (int i = (int)startIndex; i < endIndex; i++)
     {
-        Console.WriteLine("{0} | {1}/{2} [{3}%] ({4})", dirWords[bits[i]], i+1, wordsCount, Math.Round((double)i / (wordsCount - 1) * 100, 2), stopwatch.Elapsed);
+        // Console.WriteLine("{0} | {1}/{2} [{3}%] ({4})", dirWords[bits[i]], i+1, wordsCount, Math.Round((double)i / (wordsCount - 1) * 100, 2), stopwatch.Elapsed);
         for (int j = i + 1; j < wordsCount; j++)
         {
             if ((bits[i] & bits[j]) != 0) continue;
@@ -104,20 +107,23 @@ void function(double startIndex = 0, double endIndex = 0)
     // Nima's program: 00:04:32.19
 
     // combinations.ForEach(x => Console.WriteLine(string.Join(" ", x)));
-    Console.WriteLine("{0} combinations | {1}", combinations.Count, stopwatch.Elapsed);
-    // Console.WriteLine("{0} {1}", startIndex, endIndex);
+    totalCombinations += combinations.Count;
+    Console.WriteLine("{0}/{1} combinations | {2} | [{3} - {4}]", combinations.Count, totalCombinations, stopwatch.Elapsed, startIndex, endIndex);
+    threadsDone++;
     timesElapsed.Add(stopwatch.ElapsedMilliseconds);
 }
 
-    for (int i = 0; i < 1; i++) { function(); } Console.WriteLine(string.Join(" ", timesElapsed));
+// for (int i = 0; i < 1; i++) { function(); } Console.WriteLine(string.Join(" ", timesElapsed));
 
-    List<Thread> threads = new()
+List<Thread> threads = new();
+
+int amountOfThreads = 16;
+
+for (int i = 0; i < amountOfThreads; i++)
 {
-    new Thread(() => function(0, 0.2)),
-    new Thread(() => function(0.2, 0.4)),
-    new Thread(() => function(0.4, 0.6)),
-    new Thread(() => function(0.6, 0.8)),
-    new Thread(() => function(0.8, 1))
-};
+    double startIndex = (double)i / amountOfThreads;
+    double endIndex = (double)(i + 1) / amountOfThreads;
+    threads.Add(new Thread(() => function(startIndex, endIndex)));
+}
 
-// threads.ForEach(x => x.Start());
+threads.ForEach(x => x.Start());
