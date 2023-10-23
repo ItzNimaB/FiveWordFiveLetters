@@ -5,7 +5,6 @@ Stopwatch stopwatch = new();
 stopwatch.Start();
 
 Dictionary<int, string> dirWords = new();
-int[] bits = Array.Empty<int>();
 
 int totalCombinations = 0;
 int threadsDone = 0;
@@ -25,11 +24,12 @@ void loadWords()
         var bit = 0;
         foreach (char letter in word) { bit |= 1 << letter - 'a'; }
 
-        if (dirWords.ContainsKey(bit)) { duplicateWords++; continue; }
+        if (dirWords.ContainsKey(bit)) {
+            duplicateWords++;
+            continue;
+        }
 
         dirWords.Add(bit, word);
-        Array.Resize(ref bits, bits.Length + 1);
-        bits[^1] = bit;
     }
 
     Console.WriteLine("Valid - duplicate words: {0} - {1}. Time: {2}", dirWords.Count, duplicateWords, stopwatch.ElapsedMilliseconds);
@@ -39,6 +39,7 @@ loadWords();
 void function(double startIndex = 0, double endIndex = 0)
 {
     List<List<string>> combinations = new();
+    var bits = dirWords.Keys.ToArray();
 
     startIndex = Math.Round(startIndex * dirWords.Count);
     if (endIndex > 0) endIndex = Math.Round(endIndex * dirWords.Count);
@@ -77,10 +78,9 @@ void function(double startIndex = 0, double endIndex = 0)
 
     // Mads' program: 00:04:40:96
 
-    
     for (int i = (int)startIndex; i < endIndex; i++)
     {
-        // Console.WriteLine("{0} | {1}/{2} [{3}%] ({4})", dirWords[bits[i]], i+1, wordsCount, Math.Round((double)i / (wordsCount - 1) * 100, 2), stopwatch.Elapsed);
+        Console.WriteLine("{0} | {1}/{2} [{3}%] ({4})", dirWords[bits[i]], i+1, wordsCount, Math.Round((double)i / (wordsCount - 1) * 100, 2), stopwatch.Elapsed);
         for (int j = i + 1; j < wordsCount; j++)
         {
             if ((bits[i] & bits[j]) != 0) continue;
@@ -106,14 +106,13 @@ void function(double startIndex = 0, double endIndex = 0)
 
     // Nima's program: 00:04:32.19
 
-    // combinations.ForEach(x => Console.WriteLine(string.Join(" ", x)));
     totalCombinations += combinations.Count;
     Console.WriteLine("{0}/{1} combinations | {2} | [{3} - {4}]", combinations.Count, totalCombinations, stopwatch.Elapsed, startIndex, endIndex);
     threadsDone++;
     timesElapsed.Add(stopwatch.ElapsedMilliseconds);
 }
 
-// for (int i = 0; i < 1; i++) { function(); } Console.WriteLine(string.Join(" ", timesElapsed));
+for (int i = 0; i < 1; i++) { function(); } Console.WriteLine(string.Join(" ", timesElapsed));
 
 List<Thread> threads = new();
 
@@ -126,4 +125,4 @@ for (int i = 0; i < amountOfThreads; i++)
     threads.Add(new Thread(() => function(startIndex, endIndex)));
 }
 
-threads.ForEach(x => x.Start());
+// threads.ForEach(x => x.Start());
