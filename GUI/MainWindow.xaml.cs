@@ -27,24 +27,30 @@ namespace GUI
         public event PropertyChangedEventHandler PropertyChanged;
         protected void NotifyPropertyChange(string propertyName)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private int _percent = 0;
         public int Percent
         {
             get { return _percent; }
-            set { _percent = value; NotifyPropertyChange("Percent"); }
+            set { _percent = value; NotifyPropertyChange(nameof(Percent)); }
+        }
+
+        private List<string> _combos = new();
+        public List<string> Combos
+        {
+            get { return _combos; }
+            set { _combos = value; NotifyPropertyChange(nameof(Combos)); }
+
         }
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = this;
+            DataContext = this;
         }
 
-        public static readonly List<string> sorts = new() { "loop", "recursive"};
-        public string sort = sorts[0];
+        public static readonly List<string> sorts = new() { "loop" /*, "recursive" */};
 
         private async void StartSort(object sender, RoutedEventArgs e)
         {
@@ -54,38 +60,22 @@ namespace GUI
             StartButton.IsEnabled = false;
             SelectSort.IsEnabled = false;
 
+            string sort = (string)SelectSort.SelectedValue ?? sorts[0];
+
             if (sort == "loop")
             {
                 PercentBar.Maximum = 100;
-                IsIndertermniate = true;
                 // fiveWords.SortForLoops();
-                fiveWords.Index += TestFunc;
-                await fiveWords.DoWork("loop");
+                fiveWords.Progress += (sender, e) => Percent = e;
+                fiveWords.Combinations += (sender, e) => Combos = new (Combos) { e };
+                await fiveWords.SortForLoops();
                 // int amountOfThreads = 16; Parallel.For(0, amountOfThreads, i => combinations.AddRange(fiveWords.SortForLoops((double)i / amountOfThreads, (double)(i + 1) / amountOfThreads)));
                 timer.Start();
             }
-            if (sort == "recursive") combinations = fiveWords.SortRecursive();
+            if (sort == "recursive") { }
 
             // MessageBox.Show($"Starter programmet med {sort} algoritmen");
             // CombinationsTextBlock.Text = string.Join(" ", combinations);
-        }
-
-        private void TestFunc(object? sender, int e)
-        {
-            if (IsIndertermniate) IsIndertermniate = false;
-            Percent = e;
-        }
-
-        private bool _isIndertermniate = false;
-        public bool IsIndertermniate
-        {
-            get { return _isIndertermniate;  }
-            set { _isIndertermniate = value;}
-        }
-
-        private void ChangeSort(object sender, SelectionChangedEventArgs e)
-        {
-            sort = (string)SelectSort.SelectedValue;
         }
 
         private void Grid_Loaded(object sender, RoutedEventArgs e)

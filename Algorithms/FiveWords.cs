@@ -11,13 +11,20 @@ namespace Algorithms
     {
         private string FileName { get; set; }
 
-        public FiveWords(string FileName) { this.FileName = FileName; }
+        public FiveWords(string FileName) {
+            this.FileName = FileName;
+
+            LoadWords();
+        }
 
         Dictionary<int, string> dirWords = new();
 
         readonly Stopwatch stopwatch = new();
 
-        private readonly List<List<string>> combinations = new();
+        // private readonly List<List<string>> combinations = new();
+        public event EventHandler<string> Combinations;
+
+        public event EventHandler<int> Progress;
 
         public Dictionary<int, string> LoadWords()
         {
@@ -50,7 +57,7 @@ namespace Algorithms
             return dirWords;
         }
 
-        public List<List<string>> SortRecursive(double startIndex = 0, double endIndex = 0)
+        public void SortRecursive(double startIndex = 0, double endIndex = 0)
         {
             stopwatch.Start();
 
@@ -67,13 +74,13 @@ namespace Algorithms
             {
                 if (combination.Length == 5)
                 {
-                    combinations.Add(new() {
+                    Combinations?.Invoke(this, string.Format("{0} {1} {2} {3} {4}",
                         dirWords[combination[0]],
                         dirWords[combination[1]],
                         dirWords[combination[2]],
                         dirWords[combination[3]],
                         dirWords[combination[4]]
-                    });
+                    ));
                     // Console.WriteLine(string.Join(" ", combination));
                     // foreach (var item in combination) Console.Write("{0} ", dirWords[item]); Console.WriteLine();
                     return;
@@ -90,77 +97,49 @@ namespace Algorithms
                     }
                 }
             }
-
-            return combinations;
         }
 
-        public List<List<string>> SortForLoops(double startIndex = 0, double endIndex = 0)
+        public Task SortForLoops(double startIndex = 0, double endIndex = 0)
         {
-            stopwatch.Start();
-
-            var bits = dirWords.Keys.ToArray();
-
-            int wordsCount = dirWords.Count;
-
-            startIndex = Math.Round(startIndex * wordsCount);
-            if (endIndex > 0) endIndex = Math.Round(endIndex * wordsCount);
-            else endIndex = wordsCount;
-
-            for (int i = (int)startIndex; i < endIndex; i++)
+            return Task.Run(() =>
             {
-                double progress = Math.Round((double)i / (wordsCount - 1) * 100, 2);
-                UpdateProgress(i);
-                // Console.WriteLine("{0} | {1}/{2} [{3}%] ({4})", dirWords[bits[i]], i+1, wordsCount, progress, stopwatch.Elapsed);
-                for (int j = i + 1; j < wordsCount; j++)
+                stopwatch.Start();
+
+                var bits = dirWords.Keys.ToArray();
+
+                int wordsCount = dirWords.Count;
+
+                startIndex = Math.Round(startIndex * wordsCount);
+                if (endIndex > 0) endIndex = Math.Round(endIndex * wordsCount);
+                else endIndex = wordsCount;
+
+                for (int i = (int)startIndex | 0; i < (int)endIndex; i++)
                 {
-                    if ((bits[i] & bits[j]) != 0) continue;
-                    var bitIJ = bits[i] | bits[j];
-                    for (int k = j + 1; k < wordsCount; k++)
+                    Progress?.Invoke(this, (int)Math.Round((double)i / (wordsCount - 1) * 100, 2));
+                    // Console.WriteLine("{0} | {1}/{2} [{3}%] ({4})", dirWords[bits[i]], i+1, wordsCount, progress, stopwatch.Elapsed);
+                    for (int j = i + 1; j < wordsCount; j++)
                     {
-                        if ((bitIJ & bits[k]) != 0) continue;
-                        var bitJK = bitIJ | bits[k];
-                        for (int l = k + 1; l < wordsCount; l++)
+                        if ((bits[i] & bits[j]) != 0) continue;
+                        var bitIJ = bits[i] | bits[j];
+                        for (int k = j + 1; k < wordsCount; k++)
                         {
-                            if ((bitJK & bits[l]) != 0) continue;
-                            var bitJKL = bitJK | bits[l];
-                            for (int m = l + 1; m < wordsCount; m++)
+                            if ((bitIJ & bits[k]) != 0) continue;
+                            var bitJK = bitIJ | bits[k];
+                            for (int l = k + 1; l < wordsCount; l++)
                             {
-                                if ((bitJKL & bits[m]) != 0) continue;
-                                // Console.WriteLine("{0} {1} {2} {3} {4}", dirWords[bits[i]], dirWords[bits[j]], dirWords[bits[k]], dirWords[bits[l]], dirWords[bits[m]]);
-                                combinations.Add(new() { dirWords[bits[i]], dirWords[bits[j]], dirWords[bits[k]], dirWords[bits[l]], dirWords[bits[m]] });
+                                if ((bitJK & bits[l]) != 0) continue;
+                                var bitJKL = bitJK | bits[l];
+                                for (int m = l + 1; m < wordsCount; m++)
+                                {
+                                    if ((bitJKL & bits[m]) != 0) continue;
+                                    // Console.WriteLine("{0} {1} {2} {3} {4}", dirWords[bits[i]], dirWords[bits[j]], dirWords[bits[k]], dirWords[bits[l]], dirWords[bits[m]]);
+                                    Combinations?.Invoke(this, string.Format("{0} {1} {2} {3} {4}", dirWords[bits[i]], dirWords[bits[j]], dirWords[bits[k]], dirWords[bits[l]], dirWords[bits[m]] ));
+                                }
                             }
                         }
                     }
                 }
-            }
-
-            return combinations;
-        }
-
-        public Task DoWork(string algo)
-        {
-            if (algo == "loop") return Task.Run(()=> {
-                // throw new ArgumentException("Parameter cannot be null");
-                // SortForLoops();
-                for (int i = 0; i < 100; i++ )
-                {
-                    Thread.Sleep(100);
-                    UpdateProgress(i);
-                }
-            } );
-            else return Task.Run(()=> { SortForLoops(); } );
-        }
-
-        public event EventHandler<int> Index;
-
-        protected virtual void UpdateProgress(int e)
-        {
-            EventHandler<int> handler = Index;
-            if (handler != null )
-            {
-                handler(this, e);
-            }
-            
+            });
         }
     }
 }
