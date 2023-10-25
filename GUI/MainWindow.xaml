@@ -9,8 +9,9 @@
     <Grid Loaded="Grid_Loaded">
         <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Center" Height="74" Margin="0,285,0,0" VerticalAlignment="Top" Width="240" Click="StartSort"/>
         <ComboBox x:Name="SelectSort" HorizontalAlignment="Left" Margin="400,110,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ChangeSort"/>
-        <TextBox x:Name="CombinationsTextbox" HorizontalAlignment="Left" Margin="47,134,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.37,3.431"/>
-        <ProgressBar HorizontalAlignment="Center" Height="23" Margin="0,240,0,0" VerticalAlignment="Top" Width="240"/>
+        <ProgressBar x:Name="PercentBar" HorizontalAlignment="Center" Height="23" Margin="0,240,0,0" VerticalAlignment="Top" Width="240" Value="{Binding Percent, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock x:Name="CombinationsTextBlock" HorizontalAlignment="Left" Margin="64,121,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Percent, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock x:Name="Timer" HorizontalAlignment="Left" Margin="540,113,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

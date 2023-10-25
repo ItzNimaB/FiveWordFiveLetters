@@ -1,4 +1,4 @@
-﻿using FiveWordFiveLetters;
+﻿using Algorithms;
 using System.Diagnostics;
 
 Stopwatch stopwatch = new();
