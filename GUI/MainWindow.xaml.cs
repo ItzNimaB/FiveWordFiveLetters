@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Algorithms;
 
 namespace GUI
@@ -54,11 +55,16 @@ namespace GUI
 
         private async void StartSort(object sender, RoutedEventArgs e)
         {
-            FiveWords fiveWords = new("beta");
+            FiveWords fiveWords = new("alpha");
             List<List<string>> combinations = new();
             Stopwatch timer = new();
             StartButton.IsEnabled = false;
             SelectSort.IsEnabled = false;
+
+            System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(DispatcherTimerTick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
+            dispatcherTimer.Start();
 
             string sort = (string)SelectSort.SelectedValue ?? sorts[0];
 
@@ -75,13 +81,17 @@ namespace GUI
             if (sort == "recursive") { }
 
             // MessageBox.Show($"Starter programmet med {sort} algoritmen");
-            // CombinationsTextBlock.Text = string.Join(" ", combinations);
         }
 
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
             SelectSort.ItemsSource = sorts;
             SelectSort.SelectedIndex = 0;
+        }
+
+        public void DispatcherTimerTick(object sender, EventArgs e)
+        {
+            Timer.Text = string.Format("{0}", int.Parse(Timer.Text) + 1);
         }
     }
 }
