@@ -7,12 +7,33 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid Loaded="Grid_Loaded">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="153*"/>
+            <ColumnDefinition Width="7*"/>
+        </Grid.ColumnDefinitions>
         <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Center" Height="74" Margin="0,285,0,0" VerticalAlignment="Top" Width="240" Click="StartSort"/>
-        <ComboBox x:Name="SelectSort" HorizontalAlignment="Left" Margin="400,110,0,0" VerticalAlignment="Top" Width="120"/>
-        <ProgressBar x:Name="PercentBar" HorizontalAlignment="Center" Height="23" Margin="0,240,0,0" VerticalAlignment="Top" Width="240" Value="{Binding Percent, UpdateSourceTrigger=PropertyChanged}"/>
-        <TextBlock x:Name="CombinationsTextBlock" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding Percent, UpdateSourceTrigger=PropertyChanged}"/>
-        <TextBlock x:Name="Timer" HorizontalAlignment="Left" Margin="540,113,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top"/>
-        <ListBox ItemsSource="{Binding Combos, UpdateSourceTrigger=PropertyChanged}" Margin="540,134,12,0"/>
+        <ComboBox x:Name="SelectSort" HorizontalAlignment="Left" Margin="364,110,0,0" VerticalAlignment="Top" Width="120"/>
+        <ProgressBar x:Name="PercentBar" HorizontalAlignment="Center" Height="23" Margin="0,240,0,0" VerticalAlignment="Top" Width="240" Value="{Binding Percent, UpdateSourceTrigger=PropertyChanged}" Maximum="{Binding MaxPercent, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock x:Name="CombinationsTextBlock" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Percent, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="262,211,0,0"/>
+        <TextBlock x:Name="Timer" HorizontalAlignment="Left" Margin="321,110,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Height="22" Width="38" TextAlignment="Center"/>
+        <ListBox x:Name="listBox" ItemsSource="{Binding Combos, UpdateSourceTrigger=PropertyChanged}" Margin="521,134,0,0" HorizontalAlignment="Left" Width="207" Height="169" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="521,113,0,0" TextWrapping="Wrap" VerticalAlignment="Top" TextAlignment="Center" Width="207" Height="21" Text="{Binding CombosCount, UpdateSourceTrigger=PropertyChanged}" IsEnabled="False"><Run Language="da-dk" Text="0"/><LineBreak/><Run Language="da-dk"/></TextBlock>
+        <Button x:Name="SaveButton" Content="Gem til fil" HorizontalAlignment="Left" Margin="540,323,0,0" VerticalAlignment="Top" Height="72" Width="173" RenderTransformOrigin="0.5,0.5" Click="SaveToFile" IsEnabled="False"></Button>
+        <TextBlock HorizontalAlignment="Left" Margin="382,211,0,0" TextWrapping="Wrap" Text="{Binding MaxPercent, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" TextAlignment="Right"/>
+        <ComboBox x:Name="SelectFile" HorizontalAlignment="Left" Margin="196,110,0,0" VerticalAlignment="Top" Width="120"/>
+        <Viewbox HorizontalAlignment="Left" Height="39" Margin="90,298,0,0" Stretch="Fill" VerticalAlignment="Top" Width="132">
+            <Grid Height="39" Width="132.47000000000003">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="200*"/>
+                </Grid.ColumnDefinitions>
+                <Slider x:Name="slider" HorizontalAlignment="Left" Margin="0,21,0,0" VerticalAlignment="Top" Width="120" Maximum="16" Minimum="1" Grid.ColumnSpan="2"/>
+                <TextBlock x:Name="ThreadsBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Threads:" VerticalAlignment="Top" Width="120" TextAlignment="Center" Grid.ColumnSpan="2"/>
+                <TextBlock x:Name="ThreadsCount" HorizontalAlignment="Left" Margin="118,20,0,0" TextWrapping="Wrap" Text="{Binding Value, ElementName=slider}" VerticalAlignment="Top" Grid.Column="1"/>
+
+
+            </Grid>
+        </Viewbox>
 
     </Grid>
 </Window>
