@@ -19,17 +19,12 @@ namespace Algorithms
 
         Dictionary<int, string> dirWords = new();
 
-        readonly Stopwatch stopwatch = new();
-
-        // private readonly List<List<string>> combinations = new();
         public event EventHandler<string> Combinations;
         public event EventHandler<int> Progress;
         public event EventHandler<int> WordsCount;
 
         public Dictionary<int, string> LoadWords()
         {
-            stopwatch.Start();
-
             using var reader = new StreamReader($"{FileName}.txt");
             var word = "";
 
@@ -50,51 +45,7 @@ namespace Algorithms
             .ThenBy(kv => kv.Value)
             .ToDictionary(kv => kv.Key, kv => kv.Value);
 
-            stopwatch.Stop();
-
             return dirWords;
-        }
-
-        public void SortRecursive(double startIndex = 0, double endIndex = 0)
-        {
-            stopwatch.Start();
-
-            var bits = dirWords.Keys.ToArray();
-
-            startIndex = Math.Round(startIndex * dirWords.Count);
-            if (endIndex > 0) endIndex = Math.Round(endIndex * dirWords.Count);
-            else endIndex = dirWords.Count;
-
-            
-            FindCombos(0, 0, new int[0]);
-
-            void FindCombos(int startIndex, int usedBits, int[] combination)
-            {
-                if (combination.Length == 5)
-                {
-                    Combinations?.Invoke(this, string.Format("{0} {1} {2} {3} {4}",
-                        dirWords[combination[0]],
-                        dirWords[combination[1]],
-                        dirWords[combination[2]],
-                        dirWords[combination[3]],
-                        dirWords[combination[4]]
-                    ));
-                    // Console.WriteLine(string.Join(" ", combination));
-                    // foreach (var item in combination) Console.Write("{0} ", dirWords[item]); Console.WriteLine();
-                    return;
-                }
-
-                for (int i = startIndex; i < endIndex; i++)
-                {
-                    if ((usedBits & bits[i]) == 0)
-                    {
-                        int[] newCombos = new int[combination.Length + 1];
-                        combination.CopyTo(newCombos, 0);
-                        newCombos[combination.Length] = bits[i];
-                        FindCombos(i + 1, usedBits | bits[i], newCombos);
-                    }
-                }
-            }
         }
 
         public Task SortForLoops(int amountOfThreads = 1)
@@ -113,9 +64,7 @@ namespace Algorithms
 
                     for (int i = startIndex; i < endIndex; i++)
                     {
-                        // Progress?.Invoke(this, (int)Math.Round((double)i / (wordsCount - 1) * 100, 2));
                         Progress?.Invoke(this, 1);
-                        // Console.WriteLine("{0} | {1}/{2} [{3}%] ({4})", dirWords[bits[i]], i+1, wordsCount, progress, stopwatch.Elapsed);
                         for (int j = i + 1; j < wordsCount; j++)
                         {
                             if ((bits[i] & bits[j]) != 0) continue;
@@ -131,7 +80,6 @@ namespace Algorithms
                                     for (int m = l + 1; m < wordsCount; m++)
                                     {
                                         if ((bitJKL & bits[m]) != 0) continue;
-                                        // Console.WriteLine("{0} {1} {2} {3} {4}", dirWords[bits[i]], dirWords[bits[j]], dirWords[bits[k]], dirWords[bits[l]], dirWords[bits[m]]);
                                         Combinations?.Invoke(this, string.Format("{0} {1} {2} {3} {4}", dirWords[bits[i]], dirWords[bits[j]], dirWords[bits[k]], dirWords[bits[l]], dirWords[bits[m]]));
                                     }
                                 }

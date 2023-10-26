@@ -64,7 +64,7 @@ namespace GUI
             DataContext = this;
         }
 
-        public static readonly List<string> sorts = new() { "loop" /*, "recursive" */};
+        public static readonly List<string> sorts = new() { "loop" };
         public static readonly List<string> files = new() { "alpha", "beta" };
 
         private async void StartSort(object sender, RoutedEventArgs e)
@@ -86,7 +86,6 @@ namespace GUI
 
             if (sort == "loop")
             {
-                // fiveWords.SortForLoops();
                 fiveWords.WordsCount += (sender, e) => MaxPercent = e;
                 fiveWords.Progress += (sender, e) => Percent++;
                 fiveWords.Combinations += (sender, e) =>
@@ -95,8 +94,9 @@ namespace GUI
                     CombosCount = Combos.Count;
                 };
                 await fiveWords.SortForLoops((int)Math.Floor(slider.Value));
+                dispatcherTimer.Stop();
+                MessageBox.Show(string.Format("Færdig på {0} sekunder", Timer.Text));
             }
-            if (sort == "recursive") { }
         }
 
         private void Grid_Loaded(object sender, RoutedEventArgs e)
